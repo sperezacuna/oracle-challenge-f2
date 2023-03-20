@@ -1,0 +1,4 @@
+*.pt
+env/
+models/temp/
+results/temp/

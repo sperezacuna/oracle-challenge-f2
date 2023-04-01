@@ -1,11 +1,11 @@
 import os
 import time
+import json
 import pandas as pd
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertModel, logging
-import json
 
 MAX_WORDS      = 113
 BATCH_SIZE     = 32

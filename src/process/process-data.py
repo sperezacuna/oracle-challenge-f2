@@ -7,9 +7,11 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertModel
 import json
 
-MAX_WORDS     = 113
-BATCH_SIZE    = 32
-NUM_WORKERS   = 8
+MAX_WORDS      = 113
+BATCH_SIZE     = 32
+NUM_WORKERS    = 8
+
+USE_ALL_MODELS = True
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Using device: ", device)
@@ -24,10 +26,9 @@ for model in os.listdir(model_dir):
     available_models.append(model)
 
 available_models.sort()
-model_path = os.path.join(model_dir, available_models[-1])
-model_uuid = available_models[-1].split("-")[2][:-3]
 
-print("Using model: ", model_path)
+if not USE_ALL_MODELS:
+  available_models = [available_models[-1]]
 
 class BERTSentimentClassifier(nn.Module):
   def __init__(self, n_classes):
@@ -42,8 +43,6 @@ class BERTSentimentClassifier(nn.Module):
     return output
 
 model = BERTSentimentClassifier(2)
-model.load_state_dict(torch.load(model_path))
-model.to(device)
 
 class ReviewDataset(Dataset):
   def __init__(self, csv_file, tokenizer):
@@ -87,14 +86,18 @@ def infere_results():
     _, preds = torch.max(outputs, 1)
     all_preds.extend(preds.tolist())
   time_elapsed = time.time() - begin_time
-  print(f'Inference complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
+  print(f'> Inference complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
   return all_preds
 
-results = { i: sentiment for i, sentiment in enumerate(infere_results()) }
-
-tojson = {
-  "target": results
-}
-
-with open(f'results/f1-{model_uuid}.json', 'w') as f:
-  f.write(json.dumps(tojson))
+for model_name in available_models:
+  model_path = os.path.join(model_dir, model_name)
+  print("Using model: ", model_path)
+  model_uuid = model_name.split("-")[2][:-3]
+  model.load_state_dict(torch.load(model_path))
+  model.to(device)
+  results = { i: sentiment for i, sentiment in enumerate(infere_results()) }
+  tojson = {
+    "target": results
+  }
+  with open(f'results/f1-{model_uuid}.json', 'w') as f:
+    f.write(json.dumps(tojson))

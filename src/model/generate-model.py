@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertModel, AdamW, get_linear_schedule_with_warmup
+from transformers import BertTokenizer, BertModel, logging, get_linear_schedule_with_warmup
 import matplotlib.pyplot as plt
 
 MAX_WORDS     = 113
@@ -16,6 +16,8 @@ NUM_EPOCHS    = 5
 LEARNING_RATE = 2e-5
 
 NUM_WORKERS   = 8
+
+logging.set_verbosity_error()
 
 class ReviewDataset(Dataset):
   def __init__(self, csv_file, tokenizer):

@@ -4,7 +4,7 @@ import pandas as pd
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel, logging
 import json
 
 MAX_WORDS      = 113
@@ -12,6 +12,8 @@ BATCH_SIZE     = 32
 NUM_WORKERS    = 8
 
 USE_ALL_MODELS = True
+
+logging.set_verbosity_error()
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Using device: ", device)

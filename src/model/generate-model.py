@@ -165,6 +165,6 @@ ax2.set_title('Model Loss')
 ax2.set_ylabel('Loss')
 ax2.set_xlabel('Epoch')
 fig.legend(['Train accuracy', 'Validation accuracy', 'Train loss', 'Validation loss'])
-fig.savefig(f'models/bert/reviewmodel-[acc:{(max(statistics["accuracy"]["validation"]+[0])):6f}]-{model_uuid}.png')
+fig.savefig(f'models/bert/reviewmodel-[acc={(max(statistics["accuracy"]["validation"]+[0])):6f}]-{model_uuid}.png')
 
-torch.save(model.state_dict(), f'models/bert/reviewmodel-[acc:{(max(statistics["accuracy"]["validation"]+[0])):6f}]-{model_uuid}.pt')
+torch.save(model.state_dict(), f'models/bert/reviewmodel-[acc={(max(statistics["accuracy"]["validation"]+[0])):6f}]-{model_uuid}.pt')

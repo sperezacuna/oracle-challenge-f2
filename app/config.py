@@ -10,5 +10,5 @@ MODEL_CONFIG = {
 
 BERT_CONFIG = {
   'dropout-prob': 0.3,
-  'learning-rate': 2e-5
+  'learning-rate': 4e-5
 }

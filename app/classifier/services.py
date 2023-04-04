@@ -111,14 +111,20 @@ class SentimentClassifier(ABC):
     fig.legend(['Train accuracy', 'Validation accuracy', 'Train loss', 'Validation loss'])
     fig.savefig(f'{self.model_dir}/reviewmodel-[acc={(max(self.statistics["accuracy"]["validation"]+[0])):6f}]-{self.uuid}.png')
 
-  def load(self):
-    available_models = []
-    for model_name in os.listdir(self.model_dir):
-      if os.path.isfile(os.path.join(self.model_dir, model_name)) and model_name.endswith(".pt"):
-        available_models.append(model_name)
-    available_models.sort()
-    model_path = os.path.join(self.model_dir, available_models[-1])
+  def load(self, model_path):
+    if model_path is None:
+      available_models = []
+      for model_name in os.listdir(self.model_dir):
+        if os.path.isfile(os.path.join(self.model_dir, model_name)) and model_name.endswith(".pt"):
+          available_models.append(model_name)
+      available_models.sort()
+      model_path = os.path.abspath(os.path.join(self.model_dir, available_models[-1]))
+      self.uuid = available_models[-1].split("-")[2][:-3]
+    else:
+      try:
+        self.uuid = model_path.split("/")[-1].split("-")[2][:-3]
+      except:
+        pass
     print("Using model: ", model_path)
-    self.uuid = available_models[-1].split("-")[2][:-3]
     self.model.load_state_dict(torch.load(model_path))
     self.model = self.model.to(self.device)

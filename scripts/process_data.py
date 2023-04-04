@@ -10,21 +10,29 @@ from app.common.dataload import InferReviewDataLoader
 from app.classifier.bert import bertTokenizer, BertSentimentClassifier
 
 def help():
-  print("Usage: process_data.py [-h] [-m MODELTYPE]\n")
-  print("\tPerforms inference over the test dataset, using best model of MODELTYPE\n")
+  print("Usage: process_data.py [-h] [-m MODELTYPE] [-i MODELFILE]\n")
+  print("\tPerforms inference over the test dataset, using either provided MODELFILE or best stored model of MODELTYPE\n")
   print("Options:")
-  print("\t-m, --model MODEL\tEstablish the base classification model type")
+  print("\t-m, --model MODELTYPE\tEstablish the base classification model type")
+  print("\t-i, --inputmodel MODELPATH\tSet model file to use for inference")
   print("\t-h, --help\tShow this help message and exit")
 
 def main(argv):
   logging.set_verbosity_error()
 
   try:
-    arguments, values = getopt.getopt(argv, "hm:", ["help", "model="])
+    arguments, values = getopt.getopt(argv, "hm:i:", ["help", "modeltype=", "inputmodel="])
     modelType = "bert" # Default modelType is bert
+    inputModelPath = None # Default model input path is None
     for currentArgunemt, currentValue in arguments:
-      if currentArgunemt in ("-m", "--model"):
+      if currentArgunemt in ("-m", "--modeltype"):
         modelType = currentValue
+      elif currentArgunemt in ("-i", "--inputmodel"):
+        if (os.path.isfile(currentValue)):
+          inputModelPath = os.path.abspath(currentValue)
+        else:
+          print("[!] Provided model file does not exist")
+          help()
       elif currentArgunemt in ("-h", "--help"):
         help()
         sys.exit(0)
@@ -38,7 +46,7 @@ def main(argv):
     print("[!] " + str(err))
     sys.exit(1)
 
-  sentimentClassifier.load()
+  sentimentClassifier.load(inputModelPath)
   testDataLoader = InferReviewDataLoader(os.path.join(os.path.dirname(__file__), "../data/processed/test.csv"), tokenizer)
 
   results = sentimentClassifier.infer(testDataLoader)

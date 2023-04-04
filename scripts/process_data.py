@@ -8,6 +8,7 @@ from transformers import logging
 
 from app.common.dataload import InferReviewDataLoader
 from app.classifier.bert import bertTokenizer, BertSentimentClassifier
+from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
 
 def help():
   print("Usage: process_data.py [-h] [-m MODELTYPE] [-i MODELFILE]\n")
@@ -39,6 +40,9 @@ def main(argv):
     if modelType == "bert":
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
+    elif modelType == "roberta":
+      sentimentClassifier = RobertaSentimentClassifier()
+      tokenizer = robertaTokenizer
     else:
       print("[!] Invalid model type")
       sys.exit(1)
@@ -50,7 +54,7 @@ def main(argv):
   testDataLoader = InferReviewDataLoader(os.path.join(os.path.dirname(__file__), "../data/processed/test.csv"), tokenizer)
 
   results = sentimentClassifier.infer(testDataLoader)
-  results_dir = os.path.join(os.path.dirname(__file__), "../results/bert")
+  results_dir = os.path.join(os.path.dirname(__file__), f'../results/{sentimentClassifier.common_name}')
   if not os.path.exists(results_dir):
     os.makedirs(results_dir)
   with open(f'{results_dir}/{sentimentClassifier.uuid}.json', 'w') as f:

@@ -13,8 +13,8 @@ class BertSentimentClassifierModel(torch.nn.Module):
     self.l2 = torch.nn.Dropout(p=BERT_CONFIG["dropout-prob"]) # Avoid overfitting
     self.l3 = torch.nn.Linear(self.l1.config.hidden_size, 2)
   
-  def forward(self, input_ids, attention_mask):
-    l1_o = self.l1(input_ids, attention_mask = attention_mask)
+  def forward(self, inputs):
+    l1_o = self.l1(input_ids=inputs[0], attention_mask=inputs[1])
     l2_o = self.l2(l1_o[1])
     l3_o = self.l3(l2_o)
     return l3_o

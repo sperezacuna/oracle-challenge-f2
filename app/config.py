@@ -12,3 +12,8 @@ BERT_CONFIG = {
   'dropout-prob': 0.3,
   'learning-rate': 4e-5
 }
+
+ROBERTA_CONFIG = {
+  'dropout-prob': 0.3,
+  'learning-rate': 1e-5
+}

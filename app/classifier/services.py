@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 import torch
 import matplotlib.pyplot as plt
 
+from sklearn.metrics import f1_score
 from app.config import MODEL_CONFIG
 
 class SentimentClassifier(ABC):
@@ -30,8 +31,8 @@ class SentimentClassifier(ABC):
     best_model_wts = copy.deepcopy(self.model.state_dict())
     best_acc = 0.0
     for epoch in range(MODEL_CONFIG["num-epochs"]):
-      epoch_disclaimer = f'Epoch {epoch+1}/{MODEL_CONFIG["num-epochs"]}:'
-      print(epoch_disclaimer + "\n" + "-"*len(epoch_disclaimer))
+      print(f'Epoch {epoch+1}/{MODEL_CONFIG["num-epochs"]}')
+      print('-' * 11)
       # Each epoch has a training and validation phase
       for phase in ['training', 'validation']:
         if phase == 'training':
@@ -41,12 +42,16 @@ class SentimentClassifier(ABC):
         running_loss = 0.0
         running_corrects = 0
         # Iterate over data.
-        for inputs, labels in dataloaders[phase]:
-          inputs = list(map(lambda input: input.to(self.device), inputs))
+        for input_ids, attention_mask, labels in dataloaders[phase]:
+          input_ids = input_ids.to(self.device)
+          attention_mask = attention_mask.to(self.device)
           labels = labels.to(self.device)
+          # zero the parameter gradients
           optimizer.zero_grad()
+          # forward
+          # track history if only in train
           with torch.set_grad_enabled(phase == 'training'):
-            outputs = self.model(inputs)
+            outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
             _, preds = torch.max(outputs, 1)
             loss = criterion(outputs, labels)
             # backward + optimize only if in training phase
@@ -54,22 +59,22 @@ class SentimentClassifier(ABC):
               loss.backward()
               optimizer.step()
           # statistics
-          running_loss += loss.item() * inputs[0].size(0)
+          running_loss += loss.item() * input_ids.size(0)
           running_corrects += torch.sum(preds == labels.data)
-        if phase == 'training' and scheduler is not None:
+        if phase == 'training':
           scheduler.step()
         epoch_loss = running_loss / len(dataloaders[phase].dataset)
-        epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+        epoch_acc = f1_score(labels,preds)
         self.statistics["loss"][phase].append(epoch_loss)
         self.statistics["accuracy"][phase].append(epoch_acc.item())
-        print(f'{phase.capitalize()}:\tLoss: {epoch_loss:.5f} Acc: {epoch_acc:.5f}')
+        print(f'{phase}: Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
         if phase == 'validation' and epoch_acc > best_acc:
           best_acc = epoch_acc
           best_model_wts = copy.deepcopy(self.model.state_dict())
       print()
     time_elapsed = time.time() - begin_time
     print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
-    print(f'Final model Acc: {(max(self.statistics["accuracy"]["validation"]+[0])):5f}')
+    print(f'Final model Acc: {(max(self.statistics["accuracy"]["validation"]+[0])):4f}')
     # load best model weights
     self.model.load_state_dict(best_model_wts)
   
@@ -77,9 +82,10 @@ class SentimentClassifier(ABC):
     begin_time = time.time()
     all_preds = []
     self.model.eval()
-    for inputs in dataloader:
-      inputs = list(map(lambda input: input.to(self.device), inputs))
-      outputs = self.model(inputs)
+    for input_ids, attention_mask in dataloader:
+      input_ids = input_ids.to(self.device)
+      attention_mask = attention_mask.to(self.device)
+      outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
       _, preds = torch.max(outputs, 1)
       all_preds.extend(preds.tolist())
     time_elapsed = time.time() - begin_time

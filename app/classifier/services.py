@@ -2,6 +2,7 @@ import os
 import time
 import copy
 import uuid
+from sklearn.metrics import f1_score
 from abc import ABC, abstractmethod
 
 import torch
@@ -53,13 +54,18 @@ class SentimentClassifier(ABC):
             if phase == 'training':
               loss.backward()
               optimizer.step()
-          # statistics
+          # statistics  
           running_loss += loss.item() * inputs[0].size(0)
           running_corrects += torch.sum(preds == labels.data)
         if phase == 'training' and scheduler is not None:
           scheduler.step()
         epoch_loss = running_loss / len(dataloaders[phase].dataset)
-        epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+        epoch_acc = f1_score(labels.tolist(), preds.tolist(), average="macro")
+        #Alternatively
+        #epoch_acc = f1_score(labels.tolist(), preds.tolist()) #convert and moves to cpu
+        #epoch_acc = f1_score(labels.cpu(), preds.cpu(), average="macro") #  "macro" "weighted"
+        #epoch_acc = f1_score(labels.cpu(), preds.cpu()) #Must use CPU
+        #epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset) #manual calculation
         self.statistics["loss"][phase].append(epoch_loss)
         self.statistics["accuracy"][phase].append(epoch_acc.item())
         print(f'{phase.capitalize()}:\tLoss: {epoch_loss:.5f} Acc: {epoch_acc:.5f}')

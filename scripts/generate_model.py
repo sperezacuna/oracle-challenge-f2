@@ -7,6 +7,7 @@ from transformers import logging
 
 from app.common.dataload import TrainReviewDataLoader
 from app.classifier.bert import bertTokenizer, BertSentimentClassifier
+from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
 
 def help():
   print("Usage: generate_model.py [-h] [-m MODELTYPE]\n")
@@ -30,6 +31,9 @@ def main(argv):
     if modelType == "bert":
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
+    elif modelType == "roberta":
+      sentimentClassifier = RobertaSentimentClassifier()
+      tokenizer = robertaTokenizer
     else:
       print("[!] Invalid model type")
       sys.exit(1)

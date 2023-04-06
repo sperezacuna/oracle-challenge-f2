@@ -19,18 +19,19 @@ class ReviewDataset(Dataset):
       max_length = DATALOAD_CONFIG['max-words'],
       truncation = True,
       add_special_tokens = True,
-      return_token_type_ids = False,
+      return_token_type_ids = True,
       padding = 'max_length',
       return_attention_mask = True,
       return_tensors = 'pt'
     )
     token_ids = tokenized_encoding['input_ids'].flatten()
     attention_mask = tokenized_encoding['attention_mask'].flatten()
+    token_type_ids = tokenized_encoding['token_type_ids'].flatten()
     if self.labelled:
       label = self.review_frame.iloc[idx, 1]
-      return token_ids, attention_mask, label
+      return [token_ids, attention_mask, token_type_ids], label
     else:
-      return token_ids, attention_mask
+      return [token_ids, attention_mask, token_type_ids]
 
 class ReviewDataLoader(DataLoader):
   def __init__(self, csv_file, tokenizer, shuffle, labelled):

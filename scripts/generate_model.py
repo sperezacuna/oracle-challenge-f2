@@ -54,7 +54,7 @@ def main(argv):
 
   sentimentClassifier.train(trainingDataLoader, validationDataLoader)
   sentimentClassifier.save_weights()
-  sentimentClassifier.save_statistics(DATALOAD_CONFIG["batch-size"],dropout,learning)
+  sentimentClassifier.save_statistics(DATALOAD_CONFIG["batch-size"], dropout, learning)
 
 if __name__ == "__main__":
   main(sys.argv[1:]) 

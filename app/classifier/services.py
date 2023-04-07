@@ -93,7 +93,7 @@ class SentimentClassifier(ABC):
     torch.save(self.model.state_dict(), f'{self.model_dir}/reviewmodel-[acc={(max(self.statistics["accuracy"]["validation"]+[0])):6f}]-{self.uuid}.pt')
     pass
 
-  def save_statistics(self):
+  def save_statistics(self, batch, dropout, learning):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
     fig.suptitle('Model Statistics')
     ax1.plot(self.statistics['accuracy']['training'])
@@ -106,6 +106,8 @@ class SentimentClassifier(ABC):
     ax2.set_title('Model Loss')
     ax2.set_ylabel('Loss')
     ax2.set_xlabel('Epoch')
+    acc_max = max(self.statistics['accuracy']['validation'] + [0])
+    fig.text(0.0, 0.9, f"Max Validation Accuracy: {acc_max:.4f}\nBatch size: {batch}\nDropout: {dropout}\nLearning rate: {learning}",ha='left', fontsize=8)
     fig.legend(['Train accuracy', 'Validation accuracy', 'Train loss', 'Validation loss'])
     fig.savefig(f'{self.model_dir}/reviewmodel-[acc={(max(self.statistics["accuracy"]["validation"]+[0])):6f}]-{self.uuid}.png')
 

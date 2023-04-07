@@ -9,6 +9,8 @@ from app.common.dataload import TrainReviewDataLoader
 from app.classifier.bert import bertTokenizer, BertSentimentClassifier
 from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
 
+from app.config import DATALOAD_CONFIG
+
 def help():
   print("Usage: generate_model.py [-h] [-m MODELTYPE]\n")
   print("\tCreates trains and saves a new classification model\n")
@@ -31,9 +33,15 @@ def main(argv):
     if modelType == "bert":
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
+      from app.config import BERT_CONFIG
+      dropout = BERT_CONFIG["dropout-prob"]
+      learning = BERT_CONFIG["learning-rate"]
     elif modelType == "roberta":
       sentimentClassifier = RobertaSentimentClassifier()
       tokenizer = robertaTokenizer
+      from app.config import ROBERTA_CONFIG
+      dropout = ROBERTA_CONFIG["dropout-prob"]
+      learning = ROBERTA_CONFIG["learning-rate"]
     else:
       print("[!] Invalid model type")
       sys.exit(1)
@@ -46,7 +54,7 @@ def main(argv):
 
   sentimentClassifier.train(trainingDataLoader, validationDataLoader)
   sentimentClassifier.save_weights()
-  sentimentClassifier.save_statistics()
+  sentimentClassifier.save_statistics(DATALOAD_CONFIG["batch-size"],dropout,learning)
 
 if __name__ == "__main__":
   main(sys.argv[1:]) 

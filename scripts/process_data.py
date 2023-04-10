@@ -7,8 +7,6 @@ import json
 from transformers import logging
 
 from app.common.dataload import InferReviewDataLoader
-from app.classifier.bert import bertTokenizer, BertSentimentClassifier
-from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
 
 def help():
   print("Usage: process_data.py [-h] [-m MODELTYPE] [-i MODELFILE]\n")
@@ -38,11 +36,17 @@ def main(argv):
         help()
         sys.exit(0)
     if modelType == "bert":
+      from app.classifier.bert import bertTokenizer, BertSentimentClassifier
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
     elif modelType == "roberta":
+      from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
       sentimentClassifier = RobertaSentimentClassifier()
       tokenizer = robertaTokenizer
+    elif modelType == "distilbert":
+      from app.classifier.distilbert import distilbertTokenizer, DistilbertSentimentClassifier
+      sentimentClassifier = DistilbertSentimentClassifier()
+      tokenizer = distilbertTokenizer
     else:
       print("[!] Invalid model type")
       sys.exit(1)

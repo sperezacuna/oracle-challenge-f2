@@ -6,9 +6,6 @@ import getopt, sys
 from transformers import logging
 
 from app.common.dataload import TrainReviewDataLoader
-from app.classifier.bert import bertTokenizer, BertSentimentClassifier
-from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
-
 from app.config import DATALOAD_CONFIG
 
 def help():
@@ -31,17 +28,26 @@ def main(argv):
         help()
         sys.exit(0)
     if modelType == "bert":
+      from app.classifier.bert import bertTokenizer, BertSentimentClassifier
+      from app.config import BERT_CONFIG
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
-      from app.config import BERT_CONFIG
       dropout = BERT_CONFIG["dropout-prob"]
       learning = BERT_CONFIG["learning-rate"]
     elif modelType == "roberta":
+      from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
+      from app.config import ROBERTA_CONFIG
       sentimentClassifier = RobertaSentimentClassifier()
       tokenizer = robertaTokenizer
-      from app.config import ROBERTA_CONFIG
       dropout = ROBERTA_CONFIG["dropout-prob"]
       learning = ROBERTA_CONFIG["learning-rate"]
+    elif modelType == "distilbert":
+      from app.classifier.distilbert import distilbertTokenizer, DistilbertSentimentClassifier
+      from app.config import DISTILBERT_CONFIG
+      sentimentClassifier = DistilbertSentimentClassifier()
+      tokenizer = distilbertTokenizer
+      dropout = 0
+      learning = DISTILBERT_CONFIG["learning-rate"]
     else:
       print("[!] Invalid model type")
       sys.exit(1)

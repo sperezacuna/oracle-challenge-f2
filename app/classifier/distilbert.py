@@ -17,7 +17,7 @@ class DistilbertSentimentClassifierModel(torch.nn.Module):
 
 class DistilbertSentimentClassifier(SentimentClassifier):
   def __init__(self):
-    self.common_name = "distilbert"
+    self.parameters = DISTILBERT_CONFIG
     self.model = DistilbertSentimentClassifierModel()
     super().__init__()
 

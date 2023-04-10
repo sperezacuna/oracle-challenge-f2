@@ -58,7 +58,7 @@ def main(argv):
   testDataLoader = InferReviewDataLoader(os.path.join(os.path.dirname(__file__), "../data/processed/test.csv"), tokenizer)
 
   results = sentimentClassifier.infer(testDataLoader)
-  results_dir = os.path.join(os.path.dirname(__file__), f'../results/{sentimentClassifier.common_name}')
+  results_dir = os.path.join(os.path.dirname(__file__), f'../results/{sentimentClassifier.parameters["common-name"]}')
   if not os.path.exists(results_dir):
     os.makedirs(results_dir)
   with open(f'{results_dir}/{sentimentClassifier.uuid}.json', 'w') as f:

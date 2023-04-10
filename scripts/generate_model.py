@@ -6,7 +6,6 @@ import getopt, sys
 from transformers import logging
 
 from app.common.dataload import TrainReviewDataLoader
-from app.config import DATALOAD_CONFIG
 
 def help():
   print("Usage: generate_model.py [-h] [-m MODELTYPE]\n")
@@ -29,25 +28,16 @@ def main(argv):
         sys.exit(0)
     if modelType == "bert":
       from app.classifier.bert import bertTokenizer, BertSentimentClassifier
-      from app.config import BERT_CONFIG
       sentimentClassifier = BertSentimentClassifier()
       tokenizer = bertTokenizer
-      dropout = BERT_CONFIG["dropout-prob"]
-      learning = BERT_CONFIG["learning-rate"]
     elif modelType == "roberta":
       from app.classifier.roberta import robertaTokenizer, RobertaSentimentClassifier
-      from app.config import ROBERTA_CONFIG
       sentimentClassifier = RobertaSentimentClassifier()
       tokenizer = robertaTokenizer
-      dropout = ROBERTA_CONFIG["dropout-prob"]
-      learning = ROBERTA_CONFIG["learning-rate"]
     elif modelType == "distilbert":
       from app.classifier.distilbert import distilbertTokenizer, DistilbertSentimentClassifier
-      from app.config import DISTILBERT_CONFIG
       sentimentClassifier = DistilbertSentimentClassifier()
       tokenizer = distilbertTokenizer
-      dropout = 0
-      learning = DISTILBERT_CONFIG["learning-rate"]
     else:
       print("[!] Invalid model type")
       sys.exit(1)
@@ -60,7 +50,7 @@ def main(argv):
 
   sentimentClassifier.train(trainingDataLoader, validationDataLoader)
   sentimentClassifier.save_weights()
-  sentimentClassifier.save_statistics(DATALOAD_CONFIG["batch-size"], dropout, learning)
+  sentimentClassifier.save_statistics()
 
 if __name__ == "__main__":
   main(sys.argv[1:]) 

@@ -20,6 +20,12 @@ ROBERTA_CONFIG = {
   'learning-rate': 5e-5
 }
 
+ROBERTAV2_CONFIG = {
+  'common-name': 'robertav2',
+  'dropout-prob': 0.1,
+  'learning-rate': 1e-5
+}
+
 DISTILBERT_CONFIG = {
   'common-name': 'distilbert',
   'dropout-prob': 0.2,

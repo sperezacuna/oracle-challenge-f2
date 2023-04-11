@@ -4,7 +4,7 @@ from transformers import RobertaModel, RobertaTokenizer
 from app.classifier.services import SentimentClassifier
 from app.config import ROBERTA_CONFIG
 
-robertaTokenizer = tokenizer = RobertaTokenizer.from_pretrained('roberta-base', truncation=True, do_lower_case=True)
+robertaTokenizer = RobertaTokenizer.from_pretrained('roberta-base', truncation=True, do_lower_case=True)
 
 class RobertaSentimentClassifierModel(torch.nn.Module):
   def __init__(self):

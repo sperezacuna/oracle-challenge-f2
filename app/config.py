@@ -17,3 +17,8 @@ ROBERTA_CONFIG = {
   'dropout-prob': 0.05,
   'learning-rate': 5e-5
 }
+
+DISTILBERT_CONFIG = {
+  'dropout-prob': 0.2,
+  'learning-rate': 1e-5
+}

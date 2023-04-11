@@ -21,7 +21,7 @@ class BertSentimentClassifierModel(torch.nn.Module):
 
 class BertSentimentClassifier(SentimentClassifier):
   def __init__(self):
-    self.common_name = "bert"
+    self.parameters = BERT_CONFIG
     self.model = BertSentimentClassifierModel()
     super().__init__()
   

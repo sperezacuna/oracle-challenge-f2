@@ -26,7 +26,7 @@ class RobertaSentimentClassifierModel(torch.nn.Module):
 
 class RobertaSentimentClassifier(SentimentClassifier):
   def __init__(self):
-    self.common_name = "roberta"
+    self.parameters = ROBERTA_CONFIG
     self.model = RobertaSentimentClassifierModel()
     super().__init__()
   

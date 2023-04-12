@@ -22,13 +22,20 @@ def main(argv):
   try:
     arguments, values = getopt.getopt(argv, "hm:i:", ["help", "modeltype=", "inputmodel="])
     modelType = "bert" # Default modelType is bert
-    inputModelPath = None # Default model input path is None
+    inputModelPaths = [None] # Default model input path is None
     for currentArgunemt, currentValue in arguments:
       if currentArgunemt in ("-m", "--modeltype"):
         modelType = currentValue
       elif currentArgunemt in ("-i", "--inputmodel"):
         if (os.path.isfile(currentValue)):
-          inputModelPath = os.path.abspath(currentValue)
+          inputModelPaths = [os.path.abspath(currentValue)]
+        elif currentValue == "all":
+          inputModelPaths = []
+          models_dir = os.path.join(os.path.dirname(__file__), '../models')
+          for model_type in os.listdir(models_dir):
+            for model_name in os.listdir(os.path.join(models_dir, model_type)):
+              if os.path.isfile(os.path.join(models_dir, model_type, model_name)) and model_name.endswith(".pt"):
+                inputModelPaths.append(os.path.abspath(os.path.join(models_dir, model_type, model_name)))
         else:
           print("[!] Provided model file does not exist")
           help()
@@ -58,17 +65,19 @@ def main(argv):
     print("[!] " + str(err))
     sys.exit(1)
 
-  sentimentClassifier.load(inputModelPath)
   testDataLoader = InferReviewDataLoader(os.path.join(os.path.dirname(__file__), "../data/processed/test.csv"), tokenizer)
+  inputModelPaths = filter(lambda path: (path is None) or (f'/{modelType}/' in path), inputModelPaths)
 
-  results = sentimentClassifier.infer(testDataLoader)
-  results_dir = os.path.join(os.path.dirname(__file__), f'../results/{sentimentClassifier.parameters["common-name"]}')
-  if not os.path.exists(results_dir):
-    os.makedirs(results_dir)
-  with open(f'{results_dir}/{sentimentClassifier.uuid}.json', 'w') as f:
-    f.write(json.dumps({
-      "target": { i: sentiment for i, sentiment in enumerate(results) }
-    }))
+  for inputModelPath in inputModelPaths:
+    sentimentClassifier.load(inputModelPath)
+    results = sentimentClassifier.infer(testDataLoader)
+    results_dir = os.path.join(os.path.dirname(__file__), f'../results/{sentimentClassifier.parameters["common-name"]}')
+    if not os.path.exists(results_dir):
+      os.makedirs(results_dir)
+    with open(f'{results_dir}/{sentimentClassifier.uuid}.json', 'w') as f:
+      f.write(json.dumps({
+        "target": { i: sentiment for i, sentiment in enumerate(results) }
+      }))
 
 if __name__ == "__main__":
   main(sys.argv[1:]) 

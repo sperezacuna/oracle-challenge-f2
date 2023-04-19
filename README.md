@@ -4,8 +4,12 @@ This is a review classifier based on sentiment analysis built under the specific
 
 The main functionality of the project can be summarized as follows:
 
-* Point first
-* Point second
+* Generate a model capable of identifying the positive or negative sentiment of a review.
+* Fine tune the model using the 
+  * Segregate a portion of the dataset for validation purposes and hence avoiding overfitting.
+  * Data augmentation using transforms.
+* Different implementations of the Roberta and BERT sentiment classifier are available for process the data.
+* Inference and result saving for test dataset as _json_ file.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -15,11 +19,14 @@ Base technologies:
 
 * [Python](https://www.python.org/)
 * [PyTorch](https://pytorch.org/)
-* More tech
+
 
 Additional dependencies:
 
-* Other dependencies
+* [Pandas](https://pandas.pydata.org/)
+* [Scikit-learn](https://scikit-learn.org/stable/)
+* [Transformers](https://huggingface.co/docs/transformers/index)
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -31,6 +38,7 @@ Given that [python3](https://www.python.org/downloads/) and [pip](https://pypi.o
 
 * [NVIDIA CUDA Toolkit](https://developer.nvidia.com/cuda-downloads) version 11.0 or above is correctly installed.
 * [NVIDIA cuDNN](https://developer.nvidia.com/cudnn) version 7 or above is correctly installed.
+* You will require at least 12GB of VRAM to load the robertav3 and robertav4 models onto the GPU, and 6GB for the rest
 
 ### Installation
 
@@ -54,7 +62,22 @@ pip install -r requirements.txt
 
 ### Execution
 
-TBD
+To train a new model based on the [train dataset](https://storage.googleapis.com/challenges_events/03_2023/Oracle%202nd%20Reto/Data/train.csv) and the [test dataset](https://storage.googleapis.com/challenges_events/03_2023/Oracle%202nd%20Reto/Data/test.csv). 
+Then generate the validation dataset using the 10% os the train datset.
+
+1. Generate de model.
+
+```bash
+python generate_model.py [-m MODELTYPE]
+```
+
+2. Process the data.
+
+```bash
+python process_data.py [-m MODELTYPE] [-i MODELFILE]
+```
+
+3. You will use the test dataset to evaluate your model's F1-score on the [Nuwe](https://nuwe.io/dev/competitions/reto-ensena-oracle-espana/sentimiento-y-deploymentML).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

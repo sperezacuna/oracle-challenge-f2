@@ -32,7 +32,7 @@ def main(argv):
         elif currentValue == "all":
           inputModelPaths = []
           models_dir = os.path.join(os.path.dirname(__file__), '../models')
-          for model_type in os.listdir(models_dir):
+          for model_type in list(filter(lambda d: os.path.isdir(os.path.join(models_dir, d)), os.listdir(models_dir))):
             for model_name in os.listdir(os.path.join(models_dir, model_type)):
               if os.path.isfile(os.path.join(models_dir, model_type, model_name)) and model_name.endswith(".pt"):
                 inputModelPaths.append(os.path.abspath(os.path.join(models_dir, model_type, model_name)))
@@ -54,6 +54,14 @@ def main(argv):
       from app.classifier.robertav2 import robertaV2Tokenizer, RobertaV2SentimentClassifier
       sentimentClassifier = RobertaV2SentimentClassifier()
       tokenizer = robertaV2Tokenizer
+    elif modelType == "robertav3":
+      from app.classifier.robertav3 import robertaV3Tokenizer, RobertaV3SentimentClassifier
+      sentimentClassifier = RobertaV3SentimentClassifier()
+      tokenizer = robertaV3Tokenizer
+    elif modelType == "robertav4":
+      from app.classifier.robertav4 import robertaV4Tokenizer, RobertaV4SentimentClassifier
+      sentimentClassifier = RobertaV4SentimentClassifier()
+      tokenizer = robertaV4Tokenizer
     elif modelType == "distilbert":
       from app.classifier.distilbert import distilbertTokenizer, DistilbertSentimentClassifier
       sentimentClassifier = DistilbertSentimentClassifier()

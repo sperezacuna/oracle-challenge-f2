@@ -26,6 +26,18 @@ ROBERTAV2_CONFIG = {
   'learning-rate': 1e-5
 }
 
+ROBERTAV3_CONFIG = {
+  'common-name': 'robertav3',
+  'dropout-prob': 0.1,
+  'learning-rate': 1e-5
+}
+
+ROBERTAV4_CONFIG = {
+  'common-name': 'robertav4',
+  'dropout-prob': 0.25,
+  'learning-rate': 1e-6
+}
+
 DISTILBERT_CONFIG = {
   'common-name': 'distilbert',
   'dropout-prob': 0.2,

@@ -38,6 +38,14 @@ def main(argv):
       from app.classifier.robertav2 import robertaV2Tokenizer, RobertaV2SentimentClassifier
       sentimentClassifier = RobertaV2SentimentClassifier()
       tokenizer = robertaV2Tokenizer
+    elif modelType == "robertav3":
+      from app.classifier.robertav3 import robertaV3Tokenizer, RobertaV3SentimentClassifier
+      sentimentClassifier = RobertaV3SentimentClassifier()
+      tokenizer = robertaV3Tokenizer
+    elif modelType == "robertav4":
+      from app.classifier.robertav4 import robertaV4Tokenizer, RobertaV4SentimentClassifier
+      sentimentClassifier = RobertaV4SentimentClassifier()
+      tokenizer = robertaV4Tokenizer
     elif modelType == "distilbert":
       from app.classifier.distilbert import distilbertTokenizer, DistilbertSentimentClassifier
       sentimentClassifier = DistilbertSentimentClassifier()
